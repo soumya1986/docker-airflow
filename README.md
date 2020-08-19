@@ -15,38 +15,26 @@ This repository contains **Dockerfile** of [apache-airflow](https://github.com/a
 * Install [Docker Compose](https://docs.docker.com/compose/install/)
 * Following the Airflow release from [Python Package Index](https://pypi.python.org/pypi/apache-airflow)
 
-## Installation
+## Installation (Not required docker-compose command will do it automatically)
 
 Pull the image from the Docker repository.
 
     docker pull puckel/docker-airflow
 
-## Build
-
-Optionally install [Extra Airflow Packages](https://airflow.incubator.apache.org/installation.html#extra-package) and/or python dependencies at build time :
-
-    docker build --rm --build-arg AIRFLOW_DEPS="datadog,dask" -t puckel/docker-airflow .
-    docker build --rm --build-arg PYTHON_DEPS="flask_oauthlib>=0.9" -t puckel/docker-airflow .
-
-or combined
-
-    docker build --rm --build-arg AIRFLOW_DEPS="datadog,dask" --build-arg PYTHON_DEPS="flask_oauthlib>=0.9" -t puckel/docker-airflow .
-
-Don't forget to update the airflow images in the docker-compose files to puckel/docker-airflow:latest.
 
 ## Usage
 
-By default, docker-airflow runs Airflow with **SequentialExecutor** :
+By default, docker-airflow runs Airflow with **SequentialExecutor** : **(Not required for Local runs)**
 
     docker run -d -p 8080:8080 puckel/docker-airflow webserver
 
 If you want to run another executor, use the other docker-compose.yml files provided in this repository.
 
-For **LocalExecutor** :
+For **LocalExecutor** : **This is the one to be used for Local Airflow Runs**
 
     docker-compose -f docker-compose-LocalExecutor.yml up -d
 
-For **CeleryExecutor** :
+For **CeleryExecutor** : **(Not required for Local runs)**
 
     docker-compose -f docker-compose-CeleryExecutor.yml up -d
 
@@ -67,7 +55,7 @@ For encrypted connection passwords (in Local or Celery Executor), you must have 
 
     docker run puckel/docker-airflow python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)"
 
-## Configuring Airflow
+## Configuring Airflow (Not required unless you want to dive deep)
 
 It's possible to set any configuration value for Airflow from environment variables, which are used over values from the airflow.cfg.
 
@@ -87,11 +75,7 @@ In order to incorporate plugins into your docker container
     - Include the folder as a volume in command-line `-v $(pwd)/plugins/:/usr/local/airflow/plugins`
     - Use docker-compose-LocalExecutor.yml or docker-compose-CeleryExecutor.yml which contains support for adding the plugins folder as a volume
 
-## Install custom python package
 
-- Create a file "requirements.txt" with the desired python modules
-- Mount this file as a volume `-v $(pwd)/requirements.txt:/requirements.txt` (or add it as a volume in docker-compose file)
-- The entrypoint.sh script execute the pip install command (with --user option)
 
 ## UI Links
 
@@ -99,7 +83,7 @@ In order to incorporate plugins into your docker container
 - Flower: [localhost:5555](http://localhost:5555/)
 
 
-## Scale the number of workers
+## Scale the number of workers (Not required for Local runs)
 
 Easy scaling using docker-compose:
 
@@ -122,7 +106,7 @@ You can also use this to run a bash shell or any other command in the same envir
     docker run --rm -ti puckel/docker-airflow bash
     docker run --rm -ti puckel/docker-airflow ipython
 
-# Simplified SQL database configuration using PostgreSQL
+# Simplified SQL database configuration using PostgreSQL (Not required for Local runs)
 
 If the executor type is set to anything else than *SequentialExecutor* you'll need an SQL database.
 Here is a list of PostgreSQL configuration variables and their default values. They're used to compute
@@ -152,7 +136,7 @@ Therefore you must provide extras parameters URL-encoded, starting with a leadin
 
     POSTGRES_EXTRAS="?sslmode=verify-full&sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"
 
-# Simplified Celery broker configuration using Redis
+# Simplified Celery broker configuration using Redis (Not required for Local runs)
 
 If the executor type is set to *CeleryExecutor* you'll need a Celery broker. Here is a list of Redis configuration variables
 and their default values. They're used to compute the `AIRFLOW__CELERY__BROKER_URL` variable for you if you don't provide
@@ -168,6 +152,5 @@ it explicitly:
 
 You can also use those variables to adapt your compose file to match an existing Redis instance managed elsewhere.
 
-# Wanna help?
+# Work in Progress
 
-Fork, improve and PR.
